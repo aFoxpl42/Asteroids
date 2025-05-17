@@ -1,7 +1,12 @@
 # Library Imports
+from turtle import update
+from networkx import draw
 import pygame
 
 # Internal Imports / Modules
+from asteroid import Asteroid
+import asteroid
+from asteroidfield import AsteroidField
 from constants import *
 from circleshape import CircleShape
 from player import Player
@@ -16,6 +21,16 @@ def main():
     # FPS optimization stuff
     clock = pygame.time.Clock()
     dt = 0
+    
+    updateable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+    
+    Asteroid.containers = (asteroids, updateable, drawable)
+    AsteroidField.containers = updateable
+    asteroid_field = AsteroidField()
+    
+    Player.containers = (updateable, drawable)
 
     while True:
         # Handling of exiting from the game
@@ -23,7 +38,10 @@ def main():
             if event.type == pygame.QUIT:
                 return
         
+        updateable.update(dt)
         screen.fill("black")
+        for obj in drawable:
+            obj.draw(screen)
         player.update(dt)
         player.draw(screen)
         pygame.display.flip()
